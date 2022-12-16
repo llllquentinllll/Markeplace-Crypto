@@ -8,7 +8,7 @@ require("hardhat-gas-reporter")
 require("hardhat-contract-sizer")
 require("dotenv").config()
 
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "Your etherscan API key"
+const ETHERSCAN_API_KEY = process.env.API_KEY_ETHERSCAN || "Your etherscan API key"
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "0x"
 const RPC_URL_GOERLI =
   process.env.RPC_URL_GOERLI ||
@@ -34,6 +34,7 @@ module.exports = {
     // yarn hardhat verify --network <NETWORK> <CONTRACT_ADDRESS> <CONSTRUCTOR_PARAMETERS>
     apiKey: {
       rinkeby: ETHERSCAN_API_KEY,
+      goerli: ETHERSCAN_API_KEY,
     },
   },
   namedAccounts: {

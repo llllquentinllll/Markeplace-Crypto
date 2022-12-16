@@ -4,6 +4,7 @@ const { developmentChains, VERIFICATION_BLOCK_CONFIRMATIONS } = require("../help
 
 module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy, log } = deployments
+  let contractName = "contracts/"
   const { deployer } = await getNamedAccounts()
   const NUMBER_TOKEN_MINT = "100000000000000000000000"
   const arguments = [NUMBER_TOKEN_MINT]
@@ -19,10 +20,14 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
     waitConfirmations: waitBlockConfirmations,
   })
+  console.log("Api Key: ", process.env.API_KEY_ETHERSCAN)
 
-  if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
+  if (!developmentChains.includes(network.name) && process.env.API_KEY_ETHERSCAN) {
     log("Verifying...")
-    await verify(Token.address, arguments)
+    ;("contracts/Token.sol:Token")
+    contractName += "Token.sol:Token"
+    console.log("contractName: ", contractName)
+    await verify(Token.address, arguments, contractName)
   }
 
   const networkName = network.name == "hardhat" ? "localhost" : network.name
