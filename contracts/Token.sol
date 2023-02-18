@@ -10,4 +10,8 @@ contract Token is ERC20 {
     constructor(uint256 initialSupply) ERC20("FTX", "FTT") {
         _mint(msg.sender, initialSupply);
     }
+
+    function getName() public view returns (string memory) {
+        return name();
+    }
 }

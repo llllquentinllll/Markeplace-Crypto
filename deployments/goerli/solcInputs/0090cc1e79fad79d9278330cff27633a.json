@@ -14,7 +14,7 @@
       "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev Provides information about the current execution context, including the\n * sender of the transaction and its data. While these are generally available\n * via msg.sender and msg.data, they should not be accessed in such a direct\n * manner, since when dealing with meta-transactions the account sending and\n * paying for execution may not be the actual sender (as far as an application\n * is concerned).\n *\n * This contract is only required for intermediate, library-like contracts.\n */\nabstract contract Context {\n    function _msgSender() internal view virtual returns (address) {\n        return msg.sender;\n    }\n\n    function _msgData() internal view virtual returns (bytes calldata) {\n        return msg.data;\n    }\n}\n"
     },
     "contracts/Token.sol": {
-      "content": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.8.7;\n\n//Jul\n\nimport \"@openzeppelin/contracts/token/ERC20/ERC20.sol\";\n\ncontract Token is ERC20 {\n    constructor(uint256 initialSupply) ERC20(\"FTX\", \"FTT\") {\n        _mint(msg.sender, initialSupply);\n    }\n}\n"
+      "content": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.8.7;\n\n//Jul\n\nimport \"@openzeppelin/contracts/token/ERC20/ERC20.sol\";\n\ncontract Token is ERC20 {\n    constructor(uint256 initialSupply) ERC20(\"FTX\", \"FTT\") {\n        _mint(msg.sender, initialSupply);\n    }\n\n    function getName() public view returns (string memory) {\n        return name();\n    }\n}\n"
     }
   },
   "settings": {
