@@ -2,16 +2,24 @@
 
 pragma solidity ^0.8.7;
 
-//Jul
-
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
+error Raffle__SendMoreToBeScam();
+
 contract Token is ERC20 {
-    constructor(uint256 initialSupply) ERC20("FTX", "FTT") {
+    event eventScam(address indexed player);
+    // Variables
+    uint256 private immutable i_scamFee;
+
+    constructor(uint256 initialSupply, uint256 scamFee) ERC20("FTX", "FTT") {
         _mint(msg.sender, initialSupply);
+        i_scamFee = scamFee;
     }
 
-    function getName() public view returns (string memory) {
-        return name();
+    function scam() public payable {
+        if (msg.value < i_scamFee) {
+            revert Raffle__SendMoreToBeScam();
+        }
+        emit eventScam(msg.sender);
     }
 }

@@ -7,7 +7,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   let contractName = "contracts/"
   const { deployer } = await getNamedAccounts()
   const NUMBER_TOKEN_MINT = "100000000000000000000000"
-  const arguments = [NUMBER_TOKEN_MINT]
+  const SCAM_FEE = ethers.utils.parseEther("0.001") //"1000000000000000"
+  const arguments = [NUMBER_TOKEN_MINT, SCAM_FEE]
   const waitBlockConfirmations = developmentChains.includes(network.name)
     ? 1
     : VERIFICATION_BLOCK_CONFIRMATIONS
