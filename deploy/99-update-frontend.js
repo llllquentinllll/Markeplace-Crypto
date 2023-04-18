@@ -8,6 +8,7 @@ module.exports = async () => {
     await updateContractAddresses()
     await updateAbi()
     console.log("Front end written!")
+    console.log("upadate front end: " + process.env.UPDATE_FRONT_END)
   }
 }
 

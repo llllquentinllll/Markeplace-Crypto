@@ -1,0 +1,41 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ninterface AggregatorV3Interface {\n  function decimals() external view returns (uint8);\n\n  function description() external view returns (string memory);\n\n  function version() external view returns (uint256);\n\n  function getRoundData(uint80 _roundId)\n    external\n    view\n    returns (\n      uint80 roundId,\n      int256 answer,\n      uint256 startedAt,\n      uint256 updatedAt,\n      uint80 answeredInRound\n    );\n\n  function latestRoundData()\n    external\n    view\n    returns (\n      uint80 roundId,\n      int256 answer,\n      uint256 startedAt,\n      uint256 updatedAt,\n      uint80 answeredInRound\n    );\n}\n"
+    },
+    "@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+      "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts (last updated v4.6.0) (token/ERC20/IERC20.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev Interface of the ERC20 standard as defined in the EIP.\n */\ninterface IERC20 {\n    /**\n     * @dev Emitted when `value` tokens are moved from one account (`from`) to\n     * another (`to`).\n     *\n     * Note that `value` may be zero.\n     */\n    event Transfer(address indexed from, address indexed to, uint256 value);\n\n    /**\n     * @dev Emitted when the allowance of a `spender` for an `owner` is set by\n     * a call to {approve}. `value` is the new allowance.\n     */\n    event Approval(address indexed owner, address indexed spender, uint256 value);\n\n    /**\n     * @dev Returns the amount of tokens in existence.\n     */\n    function totalSupply() external view returns (uint256);\n\n    /**\n     * @dev Returns the amount of tokens owned by `account`.\n     */\n    function balanceOf(address account) external view returns (uint256);\n\n    /**\n     * @dev Moves `amount` tokens from the caller's account to `to`.\n     *\n     * Returns a boolean value indicating whether the operation succeeded.\n     *\n     * Emits a {Transfer} event.\n     */\n    function transfer(address to, uint256 amount) external returns (bool);\n\n    /**\n     * @dev Returns the remaining number of tokens that `spender` will be\n     * allowed to spend on behalf of `owner` through {transferFrom}. This is\n     * zero by default.\n     *\n     * This value changes when {approve} or {transferFrom} are called.\n     */\n    function allowance(address owner, address spender) external view returns (uint256);\n\n    /**\n     * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.\n     *\n     * Returns a boolean value indicating whether the operation succeeded.\n     *\n     * IMPORTANT: Beware that changing an allowance with this method brings the risk\n     * that someone may use both the old and the new allowance by unfortunate\n     * transaction ordering. One possible solution to mitigate this race\n     * condition is to first reduce the spender's allowance to 0 and set the\n     * desired value afterwards:\n     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729\n     *\n     * Emits an {Approval} event.\n     */\n    function approve(address spender, uint256 amount) external returns (bool);\n\n    /**\n     * @dev Moves `amount` tokens from `from` to `to` using the\n     * allowance mechanism. `amount` is then deducted from the caller's\n     * allowance.\n     *\n     * Returns a boolean value indicating whether the operation succeeded.\n     *\n     * Emits a {Transfer} event.\n     */\n    function transferFrom(\n        address from,\n        address to,\n        uint256 amount\n    ) external returns (bool);\n}\n"
+    },
+    "contracts/Token.sol": {
+      "content": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.8.7;\n\nimport \"@openzeppelin/contracts/token/ERC20/IERC20.sol\";\nimport \"@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol\";\n\nerror Raffle__SendMoreToBeScam();\n\ncontract Token {\n    event receiveLink(address indexed player);\n\n    // Variables\n    uint256 private constant PRICE_LINK_FEE = 5e15; // = 0.005\n\n    uint256 private s_balanceInLink = 0;\n    uint256 private s_balanceInUsd = 0;\n    AggregatorV3Interface private s_linkPriceFeedAddress;\n\n    // Adresse du contrat LINK\n    address public linkTokenAddress = 0x326C977E6efc84E512bB9C30f76E30c160eD06FB;\n\n    constructor(address linkPriceFeedAddress) {\n        s_linkPriceFeedAddress = AggregatorV3Interface(linkPriceFeedAddress);\n    }\n\n    function receiveLinkTokens() public {\n        // Vérifier que le contrat LINK est approuvé pour transférer des tokens\n        require(\n            IERC20(linkTokenAddress).allowance(msg.sender, address(this)) >= PRICE_LINK_FEE,\n            \"Tokens must be approved before calling this function\"\n        );\n\n        // Transférer les tokens LINK du portefeuille de l'appelant au contrat de la fonction\n        require(\n            IERC20(linkTokenAddress).transferFrom(msg.sender, address(this), PRICE_LINK_FEE),\n            \"Token transfer failed\"\n        );\n\n        // Convertir le prix LINK/USD en utilisant l'oracle de prix\n        uint256 price = getPrice(AggregatorV3Interface(s_linkPriceFeedAddress));\n\n        s_balanceInLink = s_balanceInLink + PRICE_LINK_FEE;\n        s_balanceInUsd = s_balanceInUsd + (price * PRICE_LINK_FEE);\n\n        emit receiveLink(msg.sender);\n    }\n\n    // Fonction utilitaire pour convertir le prix LINK/USD\n    function getPrice(AggregatorV3Interface priceFeed) internal view returns (uint256) {\n        (, int256 answer, , , ) = priceFeed.latestRoundData();\n\n        // Convertir le prix en 18 décimales pour que ce soit lisible par ether\n        return uint256(answer) * 10 ** 10;\n    }\n\n    function getBalanceInLink() public view returns (uint256) {\n        return s_balanceInLink;\n    }\n\n    function getBalanceInUsd() public view returns (uint256) {\n        return s_balanceInUsd;\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
